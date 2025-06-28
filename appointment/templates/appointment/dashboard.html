@@ -1,0 +1,21 @@
+<h1>Welcome, {{ user.email }}</h1>
+{% if not user.is_confirmed %}
+    <p>Your email is not confirmed.</p>
+    {% if can_resend %}
+        <form method="post" action="{% url 'resend_verification' %}">
+            {% csrf_token %}
+            <button type="submit">Resend Verification Email</button>
+        </form>
+    {% else %}
+        <p>Please wait {{ time_remaining }} seconds before resending.</p>
+    {% endif %}
+{% endif %}
+<h2>Your Vaccination Signups</h2>
+<ul>
+    {% for signup in signups %}
+        <li>{{ signup.vaccination }} - {{ signup.vaccination_date }}</li>
+    {% empty %}
+        <li>No vaccination signups yet.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'submit_vaccination' %}">Sign up for a vaccination</a>

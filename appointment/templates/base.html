@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vacation App</title>
+    <style>
+        body {
+            background-color: blue;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <h1 style="text-align: center;">Vacation App</h1>
+    <div style="text-align: center;">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
