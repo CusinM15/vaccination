@@ -83,5 +83,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mt.cusin@gmail.com'
 EMAIL_HOST_PASSWORD = 'qmam agpu sxru kgae'
 DEFAULT_FROM_EMAIL = 'mt.cusin@gmail.com'
+# settings.py
+LOGIN_URL = '/login/'  # This is your actual login URL
+LOGOUT_REDIRECT_URL = '/'  # Optional, for logout redirection
+LOGIN_REDIRECT_URL = '/dashboard/'  # After login
 
 AUTH_USER_MODEL = 'appointment.User'

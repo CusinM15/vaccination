@@ -7,6 +7,13 @@
     <title>Vaccination App</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_head %}{% endblock %}
+    {% if user.is_authenticated %}
+  <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+{% endif %}
+
 </head>
 <body>
     <div class="container">
@@ -17,5 +24,6 @@
 
         {% block content %}{% endblock %}
     </div>
+
 </body>
 </html>

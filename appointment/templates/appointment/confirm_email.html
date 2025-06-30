@@ -1,2 +1,5 @@
 <h1>Email Confirmation</h1>
 <p>{{ message }}</p>
+<form action="{% url 'login' %}" method="get">
+    <button type="submit">Login</button>
+</form>

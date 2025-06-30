@@ -12,4 +12,9 @@
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
+    <form action="{% url 'login' %}" method="get">
+        <button type="submit">Login</button>
+    </form>
 {% endblock %}
+
+
