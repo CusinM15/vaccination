@@ -1,0 +1,7 @@
+[
+  {"model": "appointment.vaccine", "pk": 1, "fields": {"name": "COVID-19"}},
+  {"model": "appointment.vaccine", "pk": 2, "fields": {"name": "Flu"}},
+  {"model": "appointment.vaccine", "pk": 3, "fields": {"name": "Hepatitis A"}},
+  {"model": "appointment.vaccine", "pk": 4, "fields": {"name": "Tetanus"}},
+  {"model": "appointment.vaccine", "pk": 5, "fields": {"name": "MMR"}}
+]

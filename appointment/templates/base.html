@@ -1,22 +1,21 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vacation App</title>
-    <style>
-        body {
-            background-color: blue;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-    </style>
+    <title>Vaccination App</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <h1 style="text-align: center;">Vacation App</h1>
-    <div style="text-align: center;">
-        {% block content %}
-        {% endblock %}
+    <div class="container">
+        <div style="text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem;">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" style="height: 50px;">
+            <h1 style="margin: 0;">Vaccination App</h1>
+        </div>
+
+        {% block content %}{% endblock %}
     </div>
 </body>
 </html>

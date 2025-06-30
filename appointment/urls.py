@@ -8,5 +8,6 @@ urlpatterns = [
     path('confirm/<str:token>/', views.confirm_email, name='confirm_email'),
     path('dashboard/', login_required(views.dashboard), name='dashboard'),
     path('resend-verification/', login_required(views.resend_verification), name='resend_verification'),
-    path('submit-vaccination/', login_required(views.submit_vaccination), name='submit_vaccination'),
+    path('submit-vaccination/', login_required(views.submit_vacation), name='submit_vacation'),
+    path('book-appointment/', login_required(views.book_appointment), name='book_appointment'),
 ]

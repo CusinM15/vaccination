@@ -1,12 +1,18 @@
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from pendulum import now, parse, date
-from .models import User, VaccinationSignup
+import requests
+
+from appointment.utils import get_next_available_slot
+from .models import Appointment, User, Vaccine
 from .forms import RegisterForm
 from django.core.mail import send_mail
 from django.conf import settings
 import secrets
+from datetime import date
+
 
 def login_view(request):
     if request.method == "POST":
@@ -49,32 +55,7 @@ def confirm_email(request, token):
     except User.DoesNotExist:
         return render(request, 'appointment/confirm_email.html', {'message': "Invalid token!"})
 
-@login_required
-def dashboard(request):
-    user = request.user
-    signups = VaccinationSignup.objects.filter(user=user)
-    can_resend = False
-    time_remaining = 0
-    last_sent = request.session.get('last_verification_sent')
-    if not user.is_confirmed:
-        if last_sent:
-            try:
-                last_sent_dt = parse(last_sent)
-                elapsed = now() - last_sent_dt
-                if elapsed.total_seconds() > 300:
-                    can_resend = True
-                else:
-                    time_remaining = 300 - int(elapsed.total_seconds())
-            except ValueError:
-                can_resend = True
-        else:
-            can_resend = True
-    return render(request, 'appointment/dashboard.html', {
-        'user': user,
-        'signups': signups,
-        'can_resend': can_resend,
-        'time_remaining': time_remaining
-    })
+    
 
 @login_required
 def resend_verification(request):
@@ -84,7 +65,7 @@ def resend_verification(request):
         if last_sent:
             try:
                 elapsed = now() - parse(last_sent)
-                if elapsed.total_seconds() < 300:
+                if elapsed.total_seconds() < 120:
                     return redirect('dashboard')
             except ValueError:
                 pass
@@ -102,7 +83,7 @@ def resend_verification(request):
         return redirect('dashboard')
 
 @login_required
-def submit_vaccination(request):
+def submit_vacation(request):
     if request.method == "POST":
         user = request.user
         vaccination = request.POST['vaccination']
@@ -113,10 +94,68 @@ def submit_vaccination(request):
             'Tetanus': date(2025, 10, 10),
             'MMR': date(2025, 7, 25)
         }
-        VaccinationSignup.objects.create(
+        Appointment.objects.create(
             user=user,
             vaccination=vaccination,
+            signup_date=now(),
             vaccination_date=vaccination_dates.get(vaccination, date.today())
         )
         return redirect('dashboard')
     return render(request, 'appointment/submit_vaccination.html')
+
+@login_required
+def dashboard(request):
+    user = request.user
+    signups = Appointment.objects.filter(user=user)
+    vaccines = Vaccine.objects.all()
+    can_resend = False
+    time_remaining = 0
+    last_sent = request.session.get('last_verification_sent')
+    if not user.is_confirmed:
+        if last_sent:
+            try:
+                last_sent_dt = parse(last_sent)
+                elapsed = now() - last_sent_dt
+                if elapsed.total_seconds() > 120:
+                    can_resend = True
+                else:
+                    time_remaining = 120 - int(elapsed.total_seconds())
+            except ValueError:
+                can_resend = True
+        else:
+            can_resend = True
+
+    return render(request, 'appointment/dashboard.html', {
+        'user': user,
+        'vaccines': vaccines,
+        'signups': signups,
+        'can_resend': can_resend,
+        'time_remaining': time_remaining
+    })
+
+@login_required
+def book_appointment(request):
+    if request.method == 'POST':
+        vaccine_id = int(request.POST['vaccine_id'])
+        date, time_slot = get_next_available_slot(vaccine_id)
+        if date and time_slot:
+            appointment = Appointment.objects.create(
+                user=request.user,
+                vaccine_id=vaccine_id,
+                vaccination_date=date,
+                time=time_slot
+            )
+            # Send immediate confirmation
+            send_mail(
+                'Vaccination Appointment Confirmed',
+                f'You are scheduled for vaccination on {date} at {time_slot}.',
+                'from@example.com',
+                [request.user.email],
+                fail_silently=False,
+            )
+            return redirect('dashboard')  # or confirmation page
+        else:
+            return render(request, 'no_slots.html')
+    
+    vaccines = Vaccine.objects.all()
+    return render(request, 'book.html', {'vaccines': vaccines})

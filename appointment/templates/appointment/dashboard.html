@@ -1,21 +1,96 @@
-<h1>Welcome, {{ user.email }}</h1>
-{% if not user.is_confirmed %}
-    <p>Your email is not confirmed.</p>
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 700px; margin: auto; padding: 2rem;">
+  {% if not user.is_confirmed %}
+    <h2>Email Verification Required</h2>
+    <p>Your account is not verified. Please check your email and click the confirmation link.</p>
+
     {% if can_resend %}
-        <form method="post" action="{% url 'resend_verification' %}">
-            {% csrf_token %}
-            <button type="submit">Resend Verification Email</button>
-        </form>
+      <form method="post" action="{% url 'resend_verification' %}">
+        {% csrf_token %}
+        <button type="submit" id="resend-btn">Resend Email</button>
+      </form>
     {% else %}
-        <p>Please wait {{ time_remaining }} seconds before resending.</p>
+      <p>
+        You can resend the verification email in <span id="countdown">2:00</span>.
+      </p>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          let timeLeft = "{{ time_remaining|default_if_none:'120' }}";
+          timeLeft = parseInt(timeLeft, 10);
+          const countdownEl = document.getElementById('countdown');
+
+          function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            if (timeLeft > 0) {
+              timeLeft--;
+              setTimeout(updateCountdown, 1000);
+            }
+          }
+
+          updateCountdown();
+        });
+      </script>
     {% endif %}
-{% endif %}
-<h2>Your Vaccination Signups</h2>
-<ul>
-    {% for signup in signups %}
-        <li>{{ signup.vaccination }} - {{ signup.vaccination_date }}</li>
-    {% empty %}
-        <li>No vaccination signups yet.</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'submit_vaccination' %}">Sign up for a vaccination</a>
+
+  {% else %}
+    <h2>Welcome, {{ user.first_name }}</h2>
+    <h3>Sign Up for a Vaccination</h3>
+
+    <form method="post" action="{% url 'book_appointment' %}">
+      {% csrf_token %}
+      <label for="vaccine">Select Vaccine:</label>
+      <select name="vaccine_id" id="vaccine" required>
+        {% for vaccine in vaccines %}
+          <option value="{{ vaccine.id }}">{{ vaccine.name }}</option>
+        {% empty %}
+          <option disabled>No vaccines available</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Submit</button>
+    </form>
+
+    <hr><br>
+    <button onclick="toggleTable()">Show/Hide My Vaccination Records</button>
+
+    <div id="vaccinationTable" style="display:none; margin-top: 1rem;">
+      {% if signups %}
+        <table border="1" style="width: 100%; text-align: center;">
+          <thead>
+            <tr>
+              <th>Vaccine</th>
+              <th>Date of Signup</th>
+              <th>Vaccination Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in signups %}
+              <tr>
+                <td>{{ record.vaccine.name }}</td>
+                <td>{{ record.signup_date|date:'Y-m-d H:i' }}</td>
+                <td>
+                  {{ record.vaccination_date|date:'Y-m-d' }}
+                  {{ record.time|time:'H:i' }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No vaccination signups yet.</p>
+      {% endif %}
+    </div>
+
+    <script>
+      function toggleTable() {
+        const table = document.getElementById("vaccinationTable");
+        table.style.display = (table.style.display === "none") ? "block" : "none";
+      }
+    </script>
+  {% endif %}
+
+</div>
+{% endblock %}

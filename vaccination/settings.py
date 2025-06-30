@@ -73,7 +73,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
-
+STATICFILES_DIRS = [BASE_DIR / "appointment/static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import connection, models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 class CustomUserManager(BaseUserManager):
@@ -34,11 +34,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-class VaccinationSignup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    vaccination = models.CharField(max_length=100)
-    signup_date = models.DateTimeField(auto_now_add=True)
-    vaccination_date = models.DateField()
+    
+class Vaccine(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
+    class Meta:
+        db_table = 'vaccines' 
 
     def __str__(self):
-        return f"{self.user.email} - {self.vaccination}"
+        return self.name
+    
+    @classmethod
+    def all(cls):
+        return cls.objects.all()
+    
+class Appointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    vaccine = models.ForeignKey(Vaccine, on_delete=models.CASCADE)
+    signup_date = models.DateTimeField(auto_now_add=True)
+    vaccination_date = models.DateField()
+    time = models.TimeField()
+    email_sent = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('vaccination_date', 'time')  # Prevent double booking
+
+    def __str__(self):
+        return f"{self.user} - {self.vaccine.name} on {self.date} at {self.time}"
