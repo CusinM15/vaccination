@@ -1,0 +1,10 @@
+Django>=3.2,<5.0
+pytz
+sqlparse
+asgiref
+# For email validation and reminders
+django-anymail[mailgun]==8.6  # Optional, if you're using a provider like Mailgun
+# If using environment variables
+python-decouple
+# For PostgreSQL support later (optional)
+psycopg2-binary  # Needed when migrating to PostgreSQL
