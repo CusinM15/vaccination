@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, time
 from .models import Appointment
-import calendar
 
 # Mapping: Vaccine ID to weekday
 VACCINE_DAY_MAP = {

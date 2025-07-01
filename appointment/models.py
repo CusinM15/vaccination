@@ -57,7 +57,8 @@ class Appointment(models.Model):
     email_sent = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('vaccination_date', 'time')  # Prevent double booking
-
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'vaccination_date'], name='one_appointment_per_user_per_day'),
+        ]
     def __str__(self):
         return f"{self.user} - {self.vaccine.name} on {self.date} at {self.time}"

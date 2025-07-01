@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 <div style="max-width: 700px; margin: auto; padding: 2rem;">
   {% if not user.is_confirmed %}
     <h2>Email Verification Required</h2>

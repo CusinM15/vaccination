@@ -1,10 +1,7 @@
-from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from pendulum import now, parse, date
-import requests
-
 from appointment.utils import get_next_available_slot
 from .models import Appointment, User, Vaccine
 from .forms import RegisterForm
@@ -12,6 +9,12 @@ from django.core.mail import send_mail
 from django.conf import settings
 import secrets
 from datetime import date
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+from .models import Appointment, Vaccine
+from .utils import get_next_available_slot  # adjust if needed
 
 
 def login_view(request):
@@ -54,8 +57,6 @@ def confirm_email(request, token):
         return render(request, 'appointment/confirm_email.html', {'message': "Email confirmed!"})
     except User.DoesNotExist:
         return render(request, 'appointment/confirm_email.html', {'message': "Invalid token!"})
-
-    
 
 @login_required
 def resend_verification(request):
@@ -136,26 +137,39 @@ def dashboard(request):
 @login_required
 def book_appointment(request):
     if request.method == 'POST':
+        print('po prvem if')
+        user = request.user
         vaccine_id = int(request.POST['vaccine_id'])
         date, time_slot = get_next_available_slot(vaccine_id)
-        if date and time_slot:
-            appointment = Appointment.objects.create(
-                user=request.user,
-                vaccine_id=vaccine_id,
-                vaccination_date=date,
-                time=time_slot
-            )
-            # Send immediate confirmation
-            send_mail(
-                'Vaccination Appointment Confirmed',
-                f'You are scheduled for vaccination on {date} at {time_slot}.',
-                'from@example.com',
-                [request.user.email],
-                fail_silently=False,
-            )
-            return redirect('dashboard')  # or confirmation page
-        else:
+
+        if not date or not time_slot:
             return render(request, 'no_slots.html')
+
+        # ✅ Check if this user already booked on this day
+        if Appointment.objects.filter(user=user, vaccination_date=date).exists():
+            print('smo v notranjem if')
+            messages.error(request, "You already have an appointment on this day.")
+            return redirect("dashboard")
+
+        # ✅ Create appointment
+        appointment = Appointment.objects.create(
+            user=user,
+            vaccine_id=vaccine_id,
+            vaccination_date=date,
+            time=time_slot
+        )
+
+        # ✅ Send confirmation email
+        send_mail(
+            'Vaccination Appointment Confirmed',
+            f'You are scheduled for vaccination on {date} at {time_slot}.',
+            'from@example.com',
+            [user.email],
+            fail_silently=False,
+        )
+
+        messages.success(request, "Appointment booked successfully!")
+        return redirect('dashboard')
+    return redirect('dashboard')
+
     
-    vaccines = Vaccine.objects.all()
-    return render(request, 'book.html', {'vaccines': vaccines})
