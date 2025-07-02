@@ -137,7 +137,6 @@ def dashboard(request):
 @login_required
 def book_appointment(request):
     if request.method == 'POST':
-        print('po prvem if')
         user = request.user
         vaccine_id = int(request.POST['vaccine_id'])
         date, time_slot = get_next_available_slot(vaccine_id)
@@ -147,7 +146,6 @@ def book_appointment(request):
 
         # ✅ Check if this user already booked on this day
         if Appointment.objects.filter(user=user, vaccination_date=date).exists():
-            print('smo v notranjem if')
             messages.error(request, "You already have an appointment on this day.")
             return redirect("dashboard")
 

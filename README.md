@@ -37,7 +37,30 @@ Vaccination App is a simple appointment booking system for vaccinations. Users c
 - [ ] Improve frontend styling and responsiveness
 - [ ] Add admin dashboard for managing bookings
 
-## 🛠️ Getting Started
+## 🐳 Running with Docker
+
+You can run this app easily using Docker without installing Python or dependencies on your machine.
+
+```bash
+git clone https://github.com/your-username/vaccination-app.git
+cd vaccination-app
+docker build -t vaccination-app .
+docker run -p 8000:8000 vaccination-app
+```
+
+Or, using Docker Compose (recommended for development):
+
+```bash
+git clone https://github.com/your-username/vaccination-app.git
+cd vaccination-app
+docker-compose up --build
+```
+
+Then open [http://localhost:8000](http://localhost:8000) in your browser.
+
+---
+
+## 🛠️ Getting Started (without Docker)
 
 ```bash
 git clone https://github.com/your-username/vaccination-app.git
@@ -47,3 +70,4 @@ source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+```
