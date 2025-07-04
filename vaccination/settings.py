@@ -53,10 +53,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "vaccination.wsgi.application"
 
+# SQLite
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# PostgresSQL
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'vaccination',
+        'USER': 'vaccinationuser',
+        'PASSWORD': '7c6b1234?',
+        'HOST': 'db',  # Change this to 'db' if using Docker or localhost for locally
+        'PORT': '5432',  
     }
 }
 
@@ -83,7 +96,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mt.cusin+notifications@gmail.com'
 EMAIL_HOST_PASSWORD = 'qmam agpu sxru kgae'
 DEFAULT_FROM_EMAIL = 'mt.cusin+notifications@gmail.com'
-# settings.py
 LOGIN_URL = '/login/'  # This is your actual login URL
 LOGOUT_REDIRECT_URL = '/'  # Optional, for logout redirection
 LOGIN_REDIRECT_URL = '/dashboard/'  # After login
