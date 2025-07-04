@@ -14,10 +14,9 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . /app/
 
-# Collect static files (optional, for production)
-# RUN python manage.py collectstatic --noinput
 
-# Expose port (default Django dev server)
+
+# Expose port 
 EXPOSE 8000
 
 # Run migrations and start server

@@ -144,12 +144,12 @@ def book_appointment(request):
         if not date or not time_slot:
             return render(request, 'no_slots.html')
 
-        # ✅ Check if this user already booked on this day
+        #  Check if this user already booked on this day
         if Appointment.objects.filter(user=user, vaccination_date=date).exists():
             messages.error(request, "You already have an appointment on this day.")
             return redirect("dashboard")
 
-        # ✅ Create appointment
+        #  Create appointment
         appointment = Appointment.objects.create(
             user=user,
             vaccine_id=vaccine_id,
@@ -157,7 +157,7 @@ def book_appointment(request):
             time=time_slot
         )
 
-        # ✅ Send confirmation email
+        #  Send confirmation email
         send_mail(
             'Vaccination Appointment Confirmed',
             f'You are scheduled for vaccination on {date} at {time_slot}.',

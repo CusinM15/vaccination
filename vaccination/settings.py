@@ -96,8 +96,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mt.cusin+notifications@gmail.com'
 EMAIL_HOST_PASSWORD = 'qmam agpu sxru kgae'
 DEFAULT_FROM_EMAIL = 'mt.cusin+notifications@gmail.com'
-LOGIN_URL = '/login/'  # This is your actual login URL
-LOGOUT_REDIRECT_URL = '/'  # Optional, for logout redirection
-LOGIN_REDIRECT_URL = '/dashboard/'  # After login
+LOGIN_URL = '/login/' 
+LOGOUT_REDIRECT_URL = '/'  
+LOGIN_REDIRECT_URL = '/dashboard/'  
 
 AUTH_USER_MODEL = 'appointment.User'
